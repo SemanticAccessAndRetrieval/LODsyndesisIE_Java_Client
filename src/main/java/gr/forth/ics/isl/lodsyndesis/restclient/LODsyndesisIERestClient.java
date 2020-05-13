@@ -403,7 +403,7 @@ public class LODsyndesisIERestClient {
 
 
         //For finding the equivalent URIs, the provenance, all the facts, and the top-K datasets of
-        //a single entity, please use the LODsyndesis JAVA REST Client
+        //a single entity, please use the LODsyndesis JAVA REST Client https://github.com/SemanticAccessAndRetrieval/LODsyndesis_Java_Client
 
     }
 }
