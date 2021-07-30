@@ -5,7 +5,7 @@
  *  Foundation for Research and Technology - Hellas (FORTH)
  *  Nobody is allowed to use, copy, distribute, or modify this work.
  *  It is published for reasons of research results reproducibility.
- *  (c) 2020 Semantic Access and Retrieval group, All rights reserved
+ *  (c) 2021 Semantic Access and Retrieval group, All rights reserved
  */
 package gr.forth.ics.isl.lodsyndesis.restclient;
 
@@ -24,7 +24,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONException; 
 import org.codehaus.jettison.json.JSONObject;
 
 /**
@@ -217,20 +217,20 @@ public class LODsyndesisIERestClient {
     }
 
      /**
-     * ecognizes all the entities of a given text by using any combination of three recognition tools and LODsyndesis.
+     * Recognizes all the entities of a given text by using any combination of three recognition tools and LODsyndesis.
       For the recognized entities, it returns the top-K subset of datasets a) whose union contains the most triples for these entities (coverage), or b) that contains the most common triples for these entities (commonalities).
      *
      * @param text the input text
      * @param ERTools the combination of entity extraction tools. Options [WAT, StanfordCoreNLP, DBpediaSpotlight, WAT_and_StanfordCoreNLP, WAT_and_DBpediaSpotlight, StanfordCoreNLP_and_DBpediaSpotlight, All]
-     * @param subsetSize It can be any integere of the following: [1,2,3,4,5]. The value "2", returns the most connected pairs of datasets, "3" the most connected triads of datasets, and so on
-     * @param topK It can be any integer greater than 0, i.e., for showing the top-k connected datasets
+     * @param subsetK It can be any integere of the following: [1,2,3,4,5]. The value "2", returns the most connected pairs of datasets, "3" the most connected triads of datasets, and so on
+     * @param resultsNumber It can be any integer greater than 0, i.e., for showing the top-k connected results
      * @param type It can be any of the following: [coverage,commonalities]
      * @return the related facts of the given text
      */
-    public String textEntitiesDatasetDiscovery(String text,String ERTools, int subsetSize,int topK,String type) throws IOException {
+    public String textEntitiesDatasetDiscovery(String text,String ERTools, int subsetK,int resultsNumber,String type) throws IOException {
         try {
             serviceName = "textEntitiesDatasetDiscovery";
-            textEntitiesDatasetDiscovery = new HttpGet(URL + "/" + serviceName + "?text=" + text+"&ERtools="+ERTools+"&subsetSize="+subsetSize+"&topK="+topK+"&measurementType="+type);
+            textEntitiesDatasetDiscovery = new HttpGet(URL + "/" + serviceName + "?text=" + text+"&ERtools="+ERTools+"&subsetK="+subsetK+"&resultsNumber="+resultsNumber+"&measurementType="+type);
             textEntitiesDatasetDiscovery.addHeader(ACCEPT, "text/csv");
             textEntitiesDatasetDiscovery.addHeader(CONTENT_TYPE, "text/csv");
             
@@ -353,10 +353,10 @@ public class LODsyndesisIERestClient {
     
     public static void main(String[] args) throws IOException {
         LODsyndesisIERestClient chanel = new LODsyndesisIERestClient();
-
-        //ERTools [WAT, StanfordCoreNLP, DBpediaSpotlight, WAT_and_StanfordCoreNLP,
-        //WAT_and_DBpediaSpotlight, StanfordCoreNLP_and_DBpediaSpotlight, All]
+            
         
+        //ERtools : Select the desired entity Recognition Tools (required) Options: [DBS,SCNLP,WAT,DBS_WAT,DBS_SCNLP,SCNLP_WAT,ALL]
+                
         String  text="Nikos Kazantzakis was born in Heraklion, Crete. Widely considered a giant of modern Greek "
                 + "literature, he was nominated for the Nobel Prize in Literature in nine different"
                 + " years. Kazantzakis' novels included Zorba the Greek "
@@ -377,12 +377,12 @@ public class LODsyndesisIERestClient {
         chanel.printEntities(output1);
         
         //export the given text annotated by using WAT and DBpedia Spotlight
-        ERTools="WAT_and_DBpediaSpotlight";
+        ERTools="DBSWAT";
         String output2=chanel.exportAsRDFa(text,ERTools);
         System.out.println("\nThe annotated text in HTML+RDFa format\n"+output2);
         
 //      find related facts of the given text by using all three ERTools
-        ERTools="All";
+        ERTools="ALL";
         String output3=chanel.findRelatedFacts(text, ERTools);
         System.out.println("\nThe related facts of the given text\n"+output3);
 
@@ -391,13 +391,13 @@ public class LODsyndesisIERestClient {
         text2=text2.replace(" ","%20");
         
         //find the triples of the recognized entities
-        ERTools="WAT_and_DBpediaSpotlight";
+        ERTools="DBSWAT";
         String output4=chanel.getTriplesOfEntities(text2,ERTools);
         System.out.println("\nThe triples of the recognized entities\n"+output4);
 
        
 //      find the the top-10 triads of datasets containing the most triples for the recognized entities.
-        ERTools="WAT_and_DBpediaSpotlight";
+        ERTools="DBSWAT";
         String output5=chanel.textEntitiesDatasetDiscovery(text2,ERTools,3,10,"coverage");
         System.out.println("\nThe top-10 triads of datasets containing the most triples for the recognized entities\n"+output5);
 
